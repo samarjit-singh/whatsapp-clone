@@ -1,17 +1,41 @@
 import getPrismaInstance from "../utils/PrismaClient.js";
 
-export const checkUser = async (req, res, next) => {
+export const checkUser = async (request, response, next) => {
   try {
-    const { email } = req.body;
+    const { email } = request.body;
     if (!email) {
-      return res.json({ msg: "Email is required", status: false });
+      return response.json({ msg: "Email is required", status: false });
     }
     const prisma = getPrismaInstance();
     const user = await prisma.user.findUnique({ where: { email } });
+
     if (!user) {
-      return res.json({ msg: "User not found", status: false });
+      return response.json({ msg: "User not found", status: false });
+    } else
+      return response.json({ msg: "User Found", status: true, data: user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const onBoardUser = async (request, response, next) => {
+  try {
+    const {
+      email,
+      name,
+      about = "Available",
+      image: profilePicture,
+    } = request.body;
+    if (!email || !name || !profilePicture) {
+      return response.json({
+        msg: "Email, Name and Image are required",
+      });
     } else {
-      return res.json({ msg: "User Found", status: true, data: user });
+      const prisma = getPrismaInstance();
+      await prisma.user.create({
+        data: { email, name, about, profilePicture },
+      });
+      return response.json({ msg: "Success", status: true });
     }
   } catch (error) {
     next(error);
