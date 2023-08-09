@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import { useStateProvider } from "@/context/StateContext";
 import { reducerCases } from "@/context/constants";
 import { data } from "autoprefixer";
+import Chat from "./Chat/Chat";
 
 function Main() {
   const router = useRouter();
@@ -30,18 +31,27 @@ function Main() {
       if (!data.status) {
         router.push("/login");
       }
-      const { id, name, email, profilePicture: profileImage, status } = data;
 
-      dispatch({
-        type: reducerCases.SET_USER_INFO,
-        userInfo: {
+      if (data?.data) {
+        const {
           id,
           name,
           email,
-          profileImage,
+          profilePicture: profileImage,
           status,
-        },
-      });
+        } = data.data;
+
+        dispatch({
+          type: reducerCases.SET_USER_INFO,
+          userInfo: {
+            id,
+            name,
+            email,
+            profileImage,
+            status,
+          },
+        });
+      }
     }
   });
 
@@ -49,7 +59,8 @@ function Main() {
     <>
       <div className="grid grid-cols-main h-screen w-screen max-h-screen max-w-full overflow-hidden">
         <ChatList />
-        <Empty />
+        {/* <Empty /> */}
+        <Chat />
       </div>
     </>
   );

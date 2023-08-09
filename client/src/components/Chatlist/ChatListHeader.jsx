@@ -1,6 +1,7 @@
 import React from "react";
 import Avatar from "../common/Avatar";
 import { useStateProvider } from "@/context/StateContext";
+import { BsFillChatLeftTextFill, BsThreeDotsVertical } from "react-icons/bs";
 
 function ChatListHeader() {
   const [{ userInfo }, dispatch] = useStateProvider();
@@ -9,8 +10,17 @@ function ChatListHeader() {
       <div className="cursor-pointer">
         <Avatar type="sm" image={userInfo?.profileImage} />
       </div>
-      <div>
-        
+      <div className="flex gap-6">
+        <BsFillChatLeftTextFill
+          className="text-panel-header-icon cursor-pointer text-xl"
+          title="New Chat"
+        />
+        <>
+          <BsThreeDotsVertical
+            className="text-panel-header-icon cursor-pointer text-xl"
+            title="Menu"
+          />
+        </>
       </div>
     </div>
   );

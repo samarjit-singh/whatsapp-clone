@@ -59,6 +59,7 @@ export default function OnBoarding() {
           dispatch({
             type: reducerCases.SET_USER_INFO,
             userInfo: {
+              id: data.user.id,
               name,
               email,
               profileImage: image,
