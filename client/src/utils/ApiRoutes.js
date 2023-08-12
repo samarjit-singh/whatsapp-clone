@@ -4,3 +4,4 @@ const AUTH_ROUTE = `${HOST}/api/auth`;
 
 export const onBoardUserRoute = `${AUTH_ROUTE}/onboarduser`;
 export const CHECK_USER_ROUTE = `${AUTH_ROUTE}/check-user`;
+export const GET_ALL_CONTACTS = `${AUTH_ROUTE}/get-contacts`;
