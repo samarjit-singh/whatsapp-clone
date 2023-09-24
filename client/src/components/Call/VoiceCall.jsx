@@ -8,7 +8,6 @@ function VoiceCall() {
 
   useEffect(() => {
     if (voiceCall.type === "out-going") {
-      alert("sending event");
       socket.current.emit("outgoing-voice-call", {
         to: voiceCall.id,
         from: {

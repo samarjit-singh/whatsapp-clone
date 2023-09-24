@@ -101,7 +101,6 @@ function Main() {
       });
 
       socket.current.on("incoming-video-call", ({ from, roomId, callType }) => {
-        alert("incoming video call");
         dispatch({
           type: reducerCases.SET_INCOMING_VIDEO_CALL,
           incomingVideoCall: { ...from, roomId, callType },
