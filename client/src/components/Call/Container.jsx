@@ -13,7 +13,7 @@ function Container({ data }) {
   const [publishStream, setPublishStream] = useState(undefined);
   const [token, setToken] = useState(undefined);
   const [zgVar, setZgVar] = useState(undefined);
-
+  const [callStarted, setCallStarted] = useState(false);
   const [callAccepted, setcallAccepted] = useState(false);
 
   useEffect(() => {
@@ -75,15 +75,13 @@ function Container({ data }) {
                 });
 
                 // New stream added, start playing the stream.
-              } else if (
-                updateType == "DELETE" &&
-                zg &&
-                localStream &&
-                streamList[0].streamID
-              ) {
-                zg.destroyStream(localStream);
+              } else if (updateType == "DELETE") {
+                if (zg && localStream && streamList[0].streamID) {
+                  zg.destroyStream(localStream);
+                  zg.logoutRoom(data.roomId.toString());
+                }
+
                 zg.stopPublishingStream(streamList[0].streamID);
-                zg.logoutRoom(data.roomId.toString());
                 dispatch({ type: reducerCases.END_CALL });
               }
             }
@@ -94,44 +92,43 @@ function Container({ data }) {
             { userID: userInfo.id.toString(), userName: userInfo.name },
             { userUpdate: true }
           );
+          
+          setTimeout(async () => {
+            const localStream = await zg.createStream({
+              camera: {
+                audio: true,
+                video: data.callType === "video" ? true : false,
+              },
+            });
+            setLocalStream(localStream);
+            setTimeout(() => {
+              const localAudio = document.getElementById("local-video");
 
-          // Callback for updates on the status of ther users in the room.
+              const videoElement = document.createElement(
+                data.callType === "video" ? "video" : "audio"
+              );
+              videoElement.id = "audio-local";
+              videoElement.className = "h-28 w-32";
+              videoElement.autoplay = true;
+              videoElement.muted = false;
 
-          // Callback for updates on the status of the streams in the room.
+              videoElement.playsInline = true;
 
-          // After calling the CreateStream method, you need to wait for the ZEGOCLOUD server to return the local stream object before any further operation.
-          const localStream = await zg.createStream({
-            camera: {
-              audio: true,
-              video: data.callType === "video" ? true : false,
-            },
-          });
-          // Get the audio tag.
-          const localAudio = document.getElementById("local-video");
+              localAudio.appendChild(videoElement);
 
-          const videoElement = document.createElement(
-            data.callType === "video" ? "video" : "audio"
-          );
-          videoElement.id = "audio-local";
-          videoElement.className = "h-28 w-32";
-          videoElement.autoplay = true;
-          videoElement.muted = false;
-
-          videoElement.playsInline = true;
-
-          localAudio.appendChild(videoElement);
-
-          const td = document.getElementById("audio-local");
-          td.srcObject = localStream;
-          const streamID = "123" + Date.now();
-          setPublishStream(streamID);
-          setLocalStream(localStream);
-          zg.startPublishingStream(streamID, localStream);
+              const td = document.getElementById("audio-local");
+              td.srcObject = localStream;
+              const streamID = "123" + Date.now();
+              setPublishStream(streamID);
+              zg.startPublishingStream(streamID, localStream);
+            }, 1000);
+          }, 1000);
         }
       );
     };
-    if (token) {
+    if (token && !callStarted) {
       startCall();
+      setCallStarted(true);
     }
   }, [token]);
 
